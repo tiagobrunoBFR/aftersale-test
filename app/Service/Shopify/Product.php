@@ -13,7 +13,7 @@ class Product
 
     private $client;
 
-    public function __construct(Client $client)
+    public function __construct($client)
     {
         $this->client = $client;
     }
@@ -22,6 +22,6 @@ class Product
     {
         $response = $this->client->request('GET', self::INDEX_URL);
 
-        return json_decode($response->getBody()->getContents());
+        return json_decode($response->getBody());
     }
 }

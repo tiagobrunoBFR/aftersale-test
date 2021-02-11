@@ -21,4 +21,5 @@ Route::post('authenticate', [AuthController::class, 'authenticate']);
 
 Route::middleware('auth:api')->group(function () {
    Route::post('favorite-products', [FavoriteProductController::class, 'store']);
+   Route::delete('favorite-products/{FavoriteProduct}', [FavoriteProductController::class, 'destroy']);
 });

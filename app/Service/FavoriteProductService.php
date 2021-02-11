@@ -22,4 +22,24 @@ class FavoriteProductService
           'product_id' => $request->product_id
       ]);
    }
+
+   public function destroy($id)
+   {
+       $favoriteProduct = $this->favoriteProduct->findOrFail($id);
+
+       if($favoriteProduct->user_id!=auth()->id()){
+         abort(403, 'Unauthorized');
+       }
+
+       $favoriteProduct->delete();
+
+       return true;
+   }
+
+   public function find($id)
+   {
+       $favoriteProduct = $this->favoriteProduct->findOrFail($id);
+
+       return $favoriteProduct;
+   }
 }

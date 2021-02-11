@@ -4,29 +4,20 @@
 namespace App\Service\Shopify;
 
 
-use GuzzleHttp\Client as Client;
+use GuzzleHttp\Client;
 
 class ShopifyService
 {
-
-    private $shop;
     private $client;
-    public function __construct(string $shop)
+    public function __construct()
     {
-        $this->shop = $shop;
-
         $this->client = new Client([
-            'base_uri' => $this->baseUrl($shop),
+            'base_uri' => env('SHOPIFY_BASE_URL'),
             'headers' => [
                 'Content-Type' => 'application/json',
                 'X-Shopify-Access-Token' => env('SHOPIFY_PASSWORD')
             ],
         ]);
-    }
-
-    public function baseUrl(string $shop)
-    {
-        return "https://$shop.myshopify.com/admin/api/2021-01";
     }
 
     public function product()

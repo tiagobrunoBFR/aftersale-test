@@ -118,7 +118,7 @@ class ProductIndexTest extends TestCase
             ]
         ];
 
-        $resultApi = $this->apiResponse('Shopify/Product/ProductIndex.json');
+        $resultApi = $this->apiResponse('Shopify/Product/ProductIndexAll.json');
         $response = $this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock();
         $response->method('getBody')->willReturn($resultApi);
 

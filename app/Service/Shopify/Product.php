@@ -6,33 +6,34 @@ namespace App\Service\Shopify;
 
 use App\Exceptions\ShopifyException;
 use App\Service\FavoriteProductService;
+use Illuminate\Support\Facades\Http;
 
 class Product
 {
-    const PRODUCT_ENDPOINT = 'products.json';
+    const PRODUCT_ENDPOINT = '/products.json';
 
-    private $client;
     private $baseUrl;
     private $password;
 
-    public function __construct($client)
+    public function __construct()
     {
-        $this->client = $client;
         $this->baseUrl = env('SHOPIFY_BASE_URL');
         $this->password = env('SHOPIFY_PASSWORD');
     }
 
-    public function index(array $ids)
+    public function index($ids)
     {
-        $params = [
-            'ids' => $this->convertFromArrayToString($ids)
-        ];
 
         try {
 
-            $response = $this->client->request('GET', self::PRODUCT_ENDPOINT, [
-                'query' => $params,
-            ]);
+            $params = [
+                'ids' => $this->convertFromArrayToString($ids)
+            ];
+
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'X-Shopify-Access-Token' => $this->password
+            ])->get($this->baseUrl.self::PRODUCT_ENDPOINT, $params);
 
             return json_decode($response->getBody());
         } catch (\Exception $exception) {
@@ -52,7 +53,7 @@ class Product
         $favoriteProduct = new FavoriteProductService();
 
         $productIds = $favoriteProduct->mapArrayProductIds($user_id);
-        $results =$this->index($productIds);
+        $results = $this->index($productIds);
         $products = collect();
 
         foreach ($results->products as $product) {

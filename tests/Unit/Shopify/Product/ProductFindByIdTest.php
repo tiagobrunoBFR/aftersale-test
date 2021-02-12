@@ -2,6 +2,7 @@
 
 namespace Tests\Unit\Shopify\Product;
 
+use App\Exceptions\ShopifyException;
 use App\Service\Shopify\Product;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
@@ -86,5 +87,30 @@ class ProductFindByIdTest extends TestCase
             $this->assertEquals($data['published_scope'], $result->products[$i]->published_scope);
             $this->assertEquals($data['tags'], $result->products[$i]->tags);
         }
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_throw_exception_shopify()
+    {
+
+        $client = $this->getMockBuilder(Client::Class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->expectException(ShopifyException::class);
+
+        $client->method('request')
+            ->will($this->throwException(new ShopifyException));
+
+        $product = new Product($client);
+
+        $ids = [
+            '4543367512203',
+            '4538642956427'
+        ];
+
+        $product->index($ids);
     }
 }

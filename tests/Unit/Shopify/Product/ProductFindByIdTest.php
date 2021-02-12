@@ -6,6 +6,7 @@ use App\Exceptions\ShopifyException;
 use App\Service\Shopify\Product;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 use Tests\Helpers\ResponseApi;
 
@@ -57,17 +58,17 @@ class ProductFindByIdTest extends TestCase
         ];
 
         $resultApi = $this->apiResponse('Shopify/Product/ProductIndexFindId.json');
-        $response = $this->getMockBuilder(Response::class)->disableOriginalConstructor()->getMock();
-        $response->method('getBody')->willReturn($resultApi);
 
-        $client = $this->getMockBuilder(Client::Class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Shopify-Access-Token' => 'xxxxxxxx'
+        ];
 
-        $client->method('request')
-            ->willReturn($response);
+        Http::fake([
+            'https://send4-avaliacao.myshopify.com/*' => Http::response($resultApi, 200, $headers),
+        ]);
 
-        $product = new Product($client);
+        $product = new Product();
 
         $result = $product->index($ids);
 
@@ -95,22 +96,26 @@ class ProductFindByIdTest extends TestCase
     public function should_return_throw_exception_shopify()
     {
 
-        $client = $this->getMockBuilder(Client::Class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $resultApi = $this->apiResponse('Shopify/Product/ProductIndexFindId.json');
 
-        $this->expectException(ShopifyException::class);
-
-        $client->method('request')
-            ->will($this->throwException(new ShopifyException));
-
-        $product = new Product($client);
-
-        $ids = [
-            '4543367512203',
-            '4538642956427'
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Shopify-Access-Token' => 'xxxxxxxx'
         ];
 
+        Http::fake([
+            'https://send4-avaliacao.myshopify.com/*' => Http::response($resultApi, 200, $headers),
+        ]);
+
+
+        $product = new Product();
+
+        $ids = 123;
+
+       $this->expectException(ShopifyException::class);
+
         $product->index($ids);
+
+        $this->assertTrue(true);
     }
 }

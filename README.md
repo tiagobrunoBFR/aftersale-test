@@ -12,7 +12,7 @@
 
 ## Documentation
 
- In the root directory of the project there is the <b>documentation.json</b> file, that can be imported by insominia, for more information follow the documentation **[link](https://support.insomnia.rest/article/52-importing-and-exporting-data)**
+ In the root directory of the project there is the <b>documentation.json</b> file, that can be imported by insominia, for more information look the documentation **[link](https://support.insomnia.rest/article/52-importing-and-exporting-data)**
 
 ## Config Project
 

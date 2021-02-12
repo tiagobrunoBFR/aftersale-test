@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AuthController;
-
+use App\Http\Controllers\Api\FavoriteProductController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('users', [UserController::class, 'store']);
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
-//Route::middleware('auth:api')->group(function () {
-//
-//});
+Route::middleware('auth:api')->group(function () {
+   Route::get('favorite-products', [FavoriteProductController::class, 'index']);
+   Route::post('favorite-products', [FavoriteProductController::class, 'store']);
+   Route::delete('favorite-products/{FavoriteProduct}', [FavoriteProductController::class, 'destroy']);
+});

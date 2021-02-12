@@ -4,12 +4,13 @@ namespace Tests\Feature\Product;
 
 use App\Models\FavoriteProduct;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
+use Tests\Helpers\ResponseApi;
 use Tests\TestCase;
+use Illuminate\Support\Facades\Http;
 
 class FavoriteProductIndexTest extends TestCase
 {
-    use RefreshDatabase;
+    use RefreshDatabase, ResponseApi;
 
     private $user;
 
@@ -32,6 +33,17 @@ class FavoriteProductIndexTest extends TestCase
         FavoriteProduct::factory()->create([
             'user_id' => $this->user->id,
             'product_id' => 4538642956427
+        ]);
+
+        $resultApi = $this->apiResponse('Shopify/Product/ProductIndexFindId.json');
+
+        $headers = [
+            'Content-Type' => 'application/json',
+            'X-Shopify-Access-Token' => 'xxxxxxxx'
+        ];
+
+        Http::fake([
+            'https://send4-avaliacao.myshopify.com/*' => Http::response($resultApi, 200, $headers),
         ]);
 
         $response = $this->json('GET', 'api/favorite-products');

@@ -4,9 +4,8 @@
 namespace App\Service\Shopify;
 
 
-use App\Exceptions\CreditCardException;
 use App\Exceptions\ShopifyException;
-use GuzzleHttp\Client;
+use App\Service\FavoriteProductService;
 
 class Product
 {
@@ -25,11 +24,11 @@ class Product
 
     public function index(array $ids)
     {
-        try {
+        $params = [
+            'ids' => $this->convertFromArrayToString($ids)
+        ];
 
-            $params = [
-                'ids' => $this->convertFromArrayToString($ids)
-            ];
+        try {
 
             $response = $this->client->request('GET', self::PRODUCT_ENDPOINT, [
                 'query' => $params,
@@ -46,5 +45,26 @@ class Product
     public function convertFromArrayToString($array)
     {
         return implode(",", $array);
+    }
+
+    public function convertCollection($user_id)
+    {
+        $favoriteProduct = new FavoriteProductService();
+
+        $productIds = $favoriteProduct->mapArrayProductIds($user_id);
+        $results =$this->index($productIds);
+        $products = collect();
+
+        foreach ($results->products as $product) {
+            $productObj = new \stdClass();
+            $productObj->id = $product->id;
+            $productObj->title = $product->title;
+            $productObj->body_html = $product->body_html;
+            $productObj->vendor = $product->vendor;
+            $productObj->product_type = $product->product_type;
+            $products->push($productObj);
+        }
+
+        return $products;
     }
 }

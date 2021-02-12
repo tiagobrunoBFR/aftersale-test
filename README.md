@@ -27,16 +27,16 @@ SHOPIFY_BASE_URL=https://send4-avaliacao.myshopify.com/admin/api/2021-01/
 - 2 config MAIL_USERNAME and MAIL_PASSWORD to send email (I used **[https://mailtrap.io/inboxes](https://mailtrap.io/inboxes)**)
 - 3 config QUEUE_CONNECTION (I used database)
 - 4 config your database in .env
-- 5 run command php artisan jwt:secret 
+
 
 ## Run Project
 
 - composer install 
-- php artisan migrate
+- php artisan jwt:secret 
 - php artisan key:generate
 - php artisan config:clear
+- php artisan migrate
 - php artisan serve
-
 ## Run Queue
 - php artisan queue:work
 

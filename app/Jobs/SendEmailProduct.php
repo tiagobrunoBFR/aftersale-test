@@ -2,25 +2,28 @@
 
 namespace App\Jobs;
 
+use App\Mail\FavoriteProductMail;
+use App\Models\User;
+use App\Service\FavoriteProductService;
+use App\Service\Shopify\ShopifyService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Mail;
 
 class SendEmailProduct implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    /**
-     * Create a new job instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    public $timeout = 220;
+
+    private $user;
+    public function __construct(User $user)
     {
-        //
+        $this->user = $user;
     }
 
     /**
@@ -30,6 +33,11 @@ class SendEmailProduct implements ShouldQueue
      */
     public function handle()
     {
-        //
+
+        $shopifyService = new ShopifyService();
+
+        $products = $shopifyService->product()->convertCollection($this->user->id);
+
+        Mail::to($this->user)->send(new FavoriteProductMail($products));
     }
 }

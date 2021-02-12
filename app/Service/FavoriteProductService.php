@@ -4,29 +4,28 @@
 namespace App\Service;
 
 
+use App\Jobs\SendEmailProduct;
 use App\Models\FavoriteProduct;
 use App\Service\Shopify\ShopifyService;
 
 class FavoriteProductService
 {
-    private $favoriteProduct;
-
-    public function __construct(FavoriteProduct $favoriteProduct)
-    {
-        $this->favoriteProduct = $favoriteProduct;
-    }
 
     public function store($request)
     {
-        return $this->favoriteProduct->create([
+        $favoriteProduct = FavoriteProduct::create([
             'user_id' => auth()->id(),
             'product_id' => $request->product_id
         ]);
+
+        $this->dispatchEmailFavoriteProduct();
+        
+        return $favoriteProduct;
     }
 
     public function destroy($id)
     {
-        $favoriteProduct = $this->favoriteProduct->findOrFail($id);
+        $favoriteProduct = FavoriteProduct::findOrFail($id);
 
         if ($favoriteProduct->user_id != auth()->id()) {
             abort(403, 'Unauthorized');
@@ -34,12 +33,14 @@ class FavoriteProductService
 
         $favoriteProduct->delete();
 
+        $this->dispatchEmailFavoriteProduct();
+
         return true;
     }
 
     public function find($id)
     {
-        $favoriteProduct = $this->favoriteProduct->findOrFail($id);
+        $favoriteProduct = FavoriteProduct::findOrFail($id);
 
         return $favoriteProduct;
     }
@@ -48,8 +49,20 @@ class FavoriteProductService
     {
         $shopifyService = new ShopifyService();
 
-        $productIds = FavoriteProduct::where('user_id', auth()->id())->pluck('product_id')->toArray();
+        $productIds = $this->mapArrayProductIds(auth()->id());
 
         return $shopifyService->product()->index($productIds);
+    }
+
+    public function mapArrayProductIds($user_id)
+    {
+        $arrayProductIds = FavoriteProduct::where('user_id', $user_id)->pluck('product_id')->toArray();
+
+        return $arrayProductIds;
+    }
+
+    private function dispatchEmailFavoriteProduct()
+    {
+        SendEmailProduct::dispatch(auth()->user());
     }
 }

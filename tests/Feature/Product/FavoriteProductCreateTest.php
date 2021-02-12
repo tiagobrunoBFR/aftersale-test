@@ -17,6 +17,7 @@ class FavoriteProductCreateTest extends TestCase
     {
         parent::setUp();
         $this->user = $this->signIn();
+        $this->withoutJobs();
     }
 
     /**

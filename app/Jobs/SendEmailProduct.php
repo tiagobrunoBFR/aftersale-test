@@ -21,6 +21,7 @@ class SendEmailProduct implements ShouldQueue
     public $timeout = 220;
 
     private $user;
+
     public function __construct(User $user)
     {
         $this->user = $user;
@@ -38,6 +39,9 @@ class SendEmailProduct implements ShouldQueue
 
         $products = $shopifyService->product()->convertCollection($this->user->id);
 
-        Mail::to($this->user)->send(new FavoriteProductMail($products));
+        if ($products) {
+            Mail::to($this->user)->send(new FavoriteProductMail($products));
+        }
+
     }
 }

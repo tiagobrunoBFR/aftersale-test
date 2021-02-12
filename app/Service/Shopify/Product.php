@@ -4,6 +4,8 @@
 namespace App\Service\Shopify;
 
 
+use App\Exceptions\CreditCardException;
+use App\Exceptions\ShopifyException;
 use GuzzleHttp\Client;
 
 class Product
@@ -21,25 +23,28 @@ class Product
         $this->password = env('SHOPIFY_PASSWORD');
     }
 
-    public function index($ids = null)
+    public function index(array $ids)
     {
-        $params = [
-            'ids' => $this->convertFromArrayToString($ids)
-        ];
+        try {
 
-        $response = $this->client->request('GET', self::PRODUCT_ENDPOINT, [
-            'query' => $params,
-        ]);
+            $params = [
+                'ids' => $this->convertFromArrayToString($ids)
+            ];
 
-        return json_decode($response->getBody());
+            $response = $this->client->request('GET', self::PRODUCT_ENDPOINT, [
+                'query' => $params,
+            ]);
+
+            return json_decode($response->getBody());
+        } catch (\Exception $exception) {
+            throw new ShopifyException($exception->getMessage());
+        }
+
+
     }
 
     public function convertFromArrayToString($array)
     {
-        if (!$array) {
-            return null;
-        }
-
         return implode(",", $array);
     }
 }

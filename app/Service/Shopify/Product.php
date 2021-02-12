@@ -26,16 +26,21 @@ class Product
 
         try {
 
-            $params = [
-                'ids' => $this->convertFromArrayToString($ids)
-            ];
+            if(count($ids)>0){
+                $params = [
+                    'ids' => $this->convertFromArrayToString($ids)
+                ];
 
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'X-Shopify-Access-Token' => $this->password
-            ])->get($this->baseUrl.self::PRODUCT_ENDPOINT, $params);
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json',
+                    'X-Shopify-Access-Token' => $this->password
+                ])->get($this->baseUrl.self::PRODUCT_ENDPOINT, $params);
 
-            return json_decode($response->getBody());
+                return json_decode($response->getBody());
+            }
+
+            return [];
+
         } catch (\Exception $exception) {
             throw new ShopifyException($exception->getMessage());
         }
@@ -53,19 +58,26 @@ class Product
         $favoriteProduct = new FavoriteProductService();
 
         $productIds = $favoriteProduct->mapArrayProductIds($user_id);
-        $results = $this->index($productIds);
-        $products = collect();
 
-        foreach ($results->products as $product) {
-            $productObj = new \stdClass();
-            $productObj->id = $product->id;
-            $productObj->title = $product->title;
-            $productObj->body_html = $product->body_html;
-            $productObj->vendor = $product->vendor;
-            $productObj->product_type = $product->product_type;
-            $products->push($productObj);
+        if (count($productIds)>0){
+            $results = $this->index($productIds);
+
+            $products = collect();
+
+            foreach ($results->products as $product) {
+                $productObj = new \stdClass();
+                $productObj->id = $product->id;
+                $productObj->title = $product->title;
+                $productObj->body_html = $product->body_html;
+                $productObj->vendor = $product->vendor;
+                $productObj->product_type = $product->product_type;
+                $products->push($productObj);
+            }
+
+            return $products;
         }
 
-        return $products;
+         return null;
+
     }
 }

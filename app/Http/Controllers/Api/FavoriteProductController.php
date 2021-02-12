@@ -34,4 +34,11 @@ class FavoriteProductController extends Controller
             return response()->json(['error' => 'Favorite product not found'], 404);
         }
     }
+
+    public function index()
+    {
+        $favoriteProducts = $this->favoriteProductService->index();
+
+        return response()->json($favoriteProducts, 200);
+    }
 }

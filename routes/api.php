@@ -20,6 +20,7 @@ Route::post('users', [UserController::class, 'store']);
 Route::post('authenticate', [AuthController::class, 'authenticate']);
 
 Route::middleware('auth:api')->group(function () {
+   Route::get('favorite-products', [FavoriteProductController::class, 'index']);
    Route::post('favorite-products', [FavoriteProductController::class, 'store']);
    Route::delete('favorite-products/{FavoriteProduct}', [FavoriteProductController::class, 'destroy']);
 });

@@ -20,9 +20,9 @@ You need to configure the .env file steps
 
 - 1 config in env variables shopify
 <br />
-SHOPIFY_PASSWORD=4e788173c35d04421ab4793044be622f
+SHOPIFY_PASSWORD=
 <br />
-SHOPIFY_BASE_URL=https://send4-avaliacao.myshopify.com/admin/api/2021-01/
+SHOPIFY_BASE_URL=
  
 - 2 config MAIL_USERNAME and MAIL_PASSWORD to send email (I used **[https://mailtrap.io/inboxes](https://mailtrap.io/inboxes)**)
 - 3 config QUEUE_CONNECTION (I used database)
